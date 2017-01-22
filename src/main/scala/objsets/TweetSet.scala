@@ -163,7 +163,19 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
     if(rightTw.retweets >  leftTw.retweets) rightTw else leftTw
   }
 
-  def descendingByRetweet: TweetList = Nil
+  def descendingByRetweet: TweetList = {
+    def descendingByRetweetAcc(list: TweetList, set: TweetSet): TweetList = {
+      if(set.isEmpty){
+        list
+      }
+      else {
+        val tweet = set.mostRetweeted
+        val twList = new Cons(tweet, list)
+        descendingByRetweetAcc(twList, set.remove(tweet))
+      }
+    }
+    descendingByRetweetAcc(Nil, this)
+  }
 
   /**
    * The following methods are already implemented
@@ -249,8 +261,12 @@ object Main extends App {
   }
 
   def size(set: TweetSet): Int = asSet(set).size
-  val s = set5.mostRetweeted
   println(size(set5))
-  println("Retweets 70 = " + s)
+  println("----------------")
+  val s = set5.descendingByRetweet
+  println(s.head)
+  println(s.tail.head)
+  println(s.tail.tail.head)
+  println(s.tail.tail.tail.head)
 
 }
