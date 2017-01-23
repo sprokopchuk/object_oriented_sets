@@ -153,13 +153,20 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
   }
 
   def mostRetweeted: Tweet = {
-    val rightTw = if(!right.isEmpty && right.mostRetweeted.retweets > elem.retweets)
-      right.mostRetweeted
-    else elem
-
-    val leftTw = if(!left.isEmpty && left.mostRetweeted.retweets > elem.retweets)
-      left.mostRetweeted
-    else elem
+    val rightTw = if(!right.isEmpty){
+      val rightTweet = right.mostRetweeted
+      if(rightTweet.retweets > elem.retweets) rightTweet else elem
+    }
+    else {
+      elem
+    }
+    val leftTw = if(!left.isEmpty){
+      val leftTweet = left.mostRetweeted
+      if(leftTweet.retweets > elem.retweets) leftTweet else elem
+    }
+    else {
+      elem
+    }
     if(rightTw.retweets >  leftTw.retweets) rightTw else leftTw
   }
 
@@ -256,7 +263,6 @@ object Main extends App {
   def asSet(tweets: TweetSet): Set[Tweet] = {
     var res = Set[Tweet]()
     tweets.foreach(res += _)
-    println(res)
     res
   }
 
