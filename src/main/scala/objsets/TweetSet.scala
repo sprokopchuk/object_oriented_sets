@@ -171,17 +171,25 @@ class NonEmpty(elem: Tweet, left: TweetSet, right: TweetSet) extends TweetSet {
   }
 
   def descendingByRetweet: TweetList = {
-    def descendingByRetweetAcc(list: TweetList, set: TweetSet): TweetList = {
+    def ascendingByRetweetAcc(list: TweetList, set: TweetSet): TweetList = {
       if(set.isEmpty){
         list
       }
       else {
         val tweet = set.mostRetweeted
-        val twList = new Cons(tweet, list)
-        descendingByRetweetAcc(twList, set.remove(tweet))
+        ascendingByRetweetAcc(new Cons(tweet, list), set.remove(tweet))
       }
     }
-    descendingByRetweetAcc(Nil, this)
+    val list = ascendingByRetweetAcc(Nil, this)
+    def descendingByRetweetAcc(ascendingList: TweetList, descendingList: TweetList): TweetList = {
+      if(ascendingList.isEmpty) {
+        descendingList
+      }
+      else {
+        descendingByRetweetAcc(ascendingList.tail, new Cons(ascendingList.head, descendingList))
+      }
+    }
+    descendingByRetweetAcc(list, Nil)
   }
 
   /**
