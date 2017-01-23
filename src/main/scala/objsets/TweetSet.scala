@@ -245,42 +245,46 @@ object GoogleVsApple {
   val google = List("android", "Android", "galaxy", "Galaxy", "nexus", "Nexus")
   val apple = List("ios", "iOS", "iphone", "iPhone", "ipad", "iPad")
 
-  lazy val googleTweets: TweetSet = ???
-  lazy val appleTweets: TweetSet = ???
+  val allTweets = TweetReader.allTweets
+
+  lazy val googleTweets: TweetSet = {
+    def googleTweetsAcc(googleList: List[String], googleSet: TweetSet): TweetSet = {
+      if(googleList.isEmpty){
+        googleSet
+      }
+      else {
+        val unionGoogleSet = googleSet.union(allTweets.filter(tw => tw.text.contains(googleList.head)))
+        googleTweetsAcc(googleList.tail, unionGoogleSet)
+      }
+    }
+    googleTweetsAcc(google, new Empty)
+  }
+  // lazy val appleTweets: TweetSet = ???
+  lazy val appleTweets: TweetSet = {
+    def appleTweetsAcc(appleList: List[String], appleSet: TweetSet): TweetSet = {
+      if(appleList.isEmpty){
+        appleSet
+      }
+      else {
+        val unionAppleSet = appleSet.union(allTweets.filter(tw => tw.text.contains(appleList.head)))
+        appleTweetsAcc(appleList.tail, unionAppleSet)
+      }
+    }
+    appleTweetsAcc(apple, new Empty)
+  }
+
 
   /**
    * A list of all tweets mentioning a keyword from either apple or google,
    * sorted by the number of retweets.
    */
-  lazy val trending: TweetList = ???
+  lazy val trending: TweetList = {
+    val trendingSet = googleTweets.union(appleTweets)
+    trendingSet.descendingByRetweet
+  }
   }
 
 object Main extends App {
   // Print the trending tweets
- // GoogleVsApple.trending foreach println
-    val set1 = new Empty
-    val set2 = set1.incl(new Tweet("a", "z", 50))
-    val set3 = set2.incl(new Tweet("b", "b body", 20))
-    val c = new Tweet("c", "c body", 70)
-    val d = new Tweet("d", "d bodddd", 23)
-    val e = new Tweet("a", "a bodddd", 34)
-    val set4c = set3.incl(c)
-    val set4d = set3.incl(d)
-    val set5 = set4c.incl(e)
-
-  def asSet(tweets: TweetSet): Set[Tweet] = {
-    var res = Set[Tweet]()
-    tweets.foreach(res += _)
-    res
-  }
-
-  def size(set: TweetSet): Int = asSet(set).size
-  println(size(set5))
-  println("----------------")
-  val s = set5.descendingByRetweet
-  println(s.head)
-  println(s.tail.head)
-  println(s.tail.tail.head)
-  println(s.tail.tail.tail.head)
-
+ GoogleVsApple.trending foreach println
 }
